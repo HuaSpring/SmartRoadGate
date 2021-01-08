@@ -1,0 +1,16 @@
+
+--create table car (car_id integer primary key,car_status bool)
+--INSERT INTO car(car_id,car_status) VALUES("003",1)
+--UPDATE car SET car_status = 1 where car_id = 1
+--select * from car
+--select car_id,car_status from car where car_id = 3
+--DELETE FROM car where car_id = "1"
+
+改进，加入时间
+
+
+
+sqlit3 xx.db
+. tables
+.schema xxtable
+

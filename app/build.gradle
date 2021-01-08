@@ -1,0 +1,148 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.3"
+
+    defaultConfig {
+        applicationId "com.fspt.roadgate"
+        minSdkVersion 19
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        multiDexEnabled true
+
+        android.applicationVariants.all { variant ->
+            variant.outputs.all {
+                def fileName
+                if (variant.buildType.name == "release") {
+                    fileName = "RoadGateSystem.apk"
+                } else {
+                    fileName = "RoadGateSystem_Beta_V${defaultConfig.versionName}.apk"
+                }
+                outputFileName = fileName
+            }
+        }
+
+
+        // 对架构的支持,现在优化为只关注的四类 CPU 架构 ,"x86_64",armeabi-v7a"
+        ndk {
+            abiFilters "x86",'armeabi-v7a'
+        }
+
+    }
+
+
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'x86','armeabi-v7a'  //, 'x86_64', 'armeabi-v7a', 'arm64-v8a' //select ABIs to build APKs for
+            universalApk true //generate an additional APK that contains all the ABIs
+        }
+    }
+
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+//            minifyEnabled false
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    //  ResDir
+    sourceSets {
+        main() {
+//            res.srcDirs += "src/main/res"
+            // 默认是 jniLibs
+            jniLibs.srcDirs = ['src/main/jniLibs']
+        }
+    }
+
+
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
+
+
+    productFlavors {
+    }
+
+    repositories {
+        flatDir {
+            dirs 'libs'   // aar目录
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
+    implementation files('libs\\rfid.jar')
+    testImplementation 'junit:junit:4.13'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+
+    implementation(name: 'nlecloudII-debug', ext: 'aar')
+    //  Retrofit 相关 okhttp okio gson convertgson
+    api 'com.squareup.retrofit2:retrofit:2.8.1'
+    api 'com.squareup.retrofit2:converter-gson:2.8.1'
+    api 'com.squareup.retrofit2:converter-scalars:2.8.1'
+    api 'com.google.code.gson:gson:2.8.6'
+//    api 'com.squareup.retrofit2:adapter-rxjava:2.5.0' // 版本略低
+    // rxAndroid  https://github.com/ReactiveX/RxAndroid 两个一起用
+    api 'io.reactivex.rxjava3:rxandroid:3.0.0'
+    api 'io.reactivex.rxjava3:rxjava:3.0.0'
+    // Adapter 也新增上
+    api 'com.squareup.retrofit2:adapter-rxjava2:2.8.1'
+    api 'org.jetbrains:annotations:15.0'
+    implementation 'androidx.exifinterface:exifinterface:1.3.0-beta01'
+    // Toolbar 适用于 X 以下的版本
+//    implementation 'com.android.support:appcompat-v7:28.0.0'
+
+// https://github.com/JakeWharton/butterknife
+    api 'com.jakewharton:butterknife:10.2.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
+
+// JavaCV & FFmpeg     在工程配置里搜  javacv ffmpeg可以搜索到最新版本,也参考 https://github.com/bytedeco/javacv
+    implementation ('org.bytedeco:javacv:1.5.3'){
+//        exclude group:"org.bytedeco",module:"opencv"
+    }
+
+
+    implementation 'org.bytedeco.javacpp-presets:opencv:4.0.1-1.4.4:android-x86'
+    implementation 'org.bytedeco.javacpp-presets:ffmpeg:4.1-1.4.4:android-x86'
+    implementation 'org.bytedeco.javacpp-presets:openblas:0.3.5-1.4.4:android-x86'
+
+
+    implementation 'org.bytedeco.javacpp-presets:opencv:4.0.1-1.4.4:android-arm'
+    implementation 'org.bytedeco.javacpp-presets:ffmpeg:4.1-1.4.4:android-arm'
+    implementation 'org.bytedeco.javacpp-presets:openblas:0.3.5-1.4.4:android-arm'
+
+
+
+// EventBus            https://blog.csdn.net/bskfnvjtlyzmv867/article/details/71480647
+    implementation 'org.greenrobot:eventbus:3.1.1'
+// RecyclerView
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+
+
+}
